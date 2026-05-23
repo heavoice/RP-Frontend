@@ -1,16 +1,69 @@
-# frontend
+# 🏡 Rumah Prediksi
 
-A new Flutter project.
+**Rumah Prediksi** adalah aplikasi mobile berbasis Flutter yang membantu pengguna mencari, memilih, dan memfilter rumah yang ingin dibeli, serta menyediakan fitur estimasi **DP (Down Payment) rumah** sebagai sarana awal perencanaan pembelian properti.
 
-## Getting Started
+---
 
-This project is a starting point for a Flutter application.
+## 🎯 Tujuan Aplikasi
 
-A few resources to get you started if this is your first Flutter project:
+Aplikasi ini bertujuan untuk:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- Membantu pengguna menemukan rumah sesuai kebutuhan
+- Mempermudah proses pemilihan rumah
+- Memberikan estimasi awal DP rumah
+- Menjadi langkah awal sebelum pengajuan KPR
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+> “Anda bisa memilih rumah yang anda sukai atau melakukan filtrasi rumah yang ingin anda pilih, serta melihat estimasi DP rumah.”
+
+---
+
+## 🚀 Fitur Utama (MVP)
+
+### 🔐 Autentikasi
+
+- Register pengguna
+- Login & logout
+- Proteksi akses data rumah
+
+### 🏠 Data Rumah
+
+- List rumah dari database
+- Detail rumah (harga, lokasi, tipe, deskripsi)
+- Pilih rumah favorit
+
+### 🔎 Filter & Pencarian
+
+- Filter berdasarkan harga
+- Filter berdasarkan lokasi
+- Filter berdasarkan tipe rumah
+- Search rumah
+
+### 💰 Simulasi DP Rumah
+
+- Perhitungan estimasi DP berdasarkan harga rumah
+- Simulasi sederhana cicilan
+- Membantu user menentukan kemampuan pembelian
+
+### ❤️ Favorit
+
+- Simpan rumah yang disukai
+- Akses daftar favorit
+
+## 🛠️ Teknologi yang Digunakan
+
+- Flutter
+
+## 📦 Status Pengembangan
+
+Aplikasi masih dalam tahap MVP dengan rencana pengembangan:
+
+- Simulasi KPR lanjutan
+- Rekomendasi rumah berbasis AI
+- Integrasi peta (Google Maps)
+- Dashboard user
+
+---
+
+## 🏁 Kesimpulan
+
+**Rumah Prediksi** adalah aplikasi modern untuk membantu pengguna menemukan rumah, melakukan filter, dan menghitung estimasi DP secara mudah.
