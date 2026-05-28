@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/providers/auth_provider.dart';
-import 'package:frontend/services/login_service.dart';
 import 'package:frontend/settings/constant.dart';
 import 'package:frontend/widgets/password_underline_text.dart';
 import 'package:frontend/widgets/signup_underline_text.dart';

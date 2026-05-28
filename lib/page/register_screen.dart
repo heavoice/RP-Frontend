@@ -42,7 +42,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final isMobileOrTablet = screenWidth < 1000;
     final isMiniMobile = screenWidth < 480;
 
     return Scaffold(
