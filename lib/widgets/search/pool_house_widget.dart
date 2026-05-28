@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:frontend/exceptions/unauthorized_exception.dart';
 import 'package:frontend/providers/auth_provider.dart';
-
 import 'package:frontend/settings/constant.dart';
 import 'package:frontend/services/house_service.dart';
 import 'package:frontend/widgets/house_card.dart';
@@ -114,7 +112,7 @@ class _PoolHouseWidgetState extends ConsumerState<PoolHouseWidget> {
                 vertical: 80,
               ),
               child: const CircularProgressIndicator(
-                color: AppColors.primarycolor,
+                color: AppColors.secondcolor,
               ),
             ),
           );

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:frontend/env.dart';
+import 'package:frontend/page/booking_screen.dart';
 
 import 'package:frontend/page/home_screen.dart';
 import 'package:frontend/page/login_screen.dart';
@@ -74,6 +75,9 @@ class RumahPrediksi extends ConsumerWidget {
         '/search': (_) => const ProtectedRoute(
               child: SearchScreen(),
             ),
+        '/booking': (_) => const ProtectedRoute(
+              child: BookingScreen(),
+            )
       },
     );
   }

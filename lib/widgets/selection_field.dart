@@ -48,9 +48,9 @@ class SelectionField extends StatelessWidget {
             children: [
               Text(
                 value,
-                style: textStyle(14, FontWeight.w600, Colors.black),
+                style: textStyle(13, FontWeight.w600, Colors.black),
               ),
-              const SizedBox(width: 14),
+              const SizedBox(width: 10),
               const Icon(
                 Icons.keyboard_arrow_down,
                 size: 16,

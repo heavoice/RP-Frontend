@@ -39,7 +39,7 @@ class _SelectedHouseCardState extends State<SelectedHouseCard> {
 
   @override
   Widget build(BuildContext context) {
-    final house = widget.favoriteHouse;
+    final house = widget.favoriteHouse['house'] ?? {};
 
     return MouseRegion(
       onEnter: (_) => setState(() => isHover = true),
@@ -120,7 +120,12 @@ class _SelectedHouseCardState extends State<SelectedHouseCard> {
                             borderRadius: BorderRadius.circular(999),
                             onTap: () async {
                               try {
-                                final houseId = house['houseId'];
+                                final houseId = house['id'];
+
+                                if (houseId == null) {
+                                  debugPrint('HOUSE ID NULL');
+                                  return;
+                                }
 
                                 if (isFavorite) {
                                   await FavoriteService.removeFavorite(houseId);
@@ -275,7 +280,7 @@ class _SelectedHouseCardState extends State<SelectedHouseCard> {
                         ),
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(999),
-                            color: AppColors.primarycolor),
+                            color: AppColors.secondcolor),
                         child: const Center(
                           child: Text(
                             'Buka Selengkapnya',
@@ -289,7 +294,7 @@ class _SelectedHouseCardState extends State<SelectedHouseCard> {
                           ),
                         ),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),

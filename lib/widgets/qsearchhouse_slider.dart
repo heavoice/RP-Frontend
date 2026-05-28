@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/widgets/selected_house_card.dart';
+import 'package:frontend/widgets/house_card.dart';
 
-class HouseSlider extends StatelessWidget {
-  final List<dynamic> favorites;
+class QuickSearchHouseSlider extends StatelessWidget {
+  final List<dynamic> houses;
   final VoidCallback? onRefresh;
 
-  const HouseSlider({
+  const QuickSearchHouseSlider({
     super.key,
-    required this.favorites,
+    required this.houses,
     this.onRefresh,
   });
 
@@ -20,14 +20,14 @@ class HouseSlider extends StatelessWidget {
         clipBehavior: Clip.none,
         physics: const ClampingScrollPhysics(),
         padEnds: false,
-        itemCount: favorites.length,
+        itemCount: houses.length,
         itemBuilder: (context, index) {
-          final house = favorites[index];
+          final house = houses[index];
 
           return Padding(
             padding: const EdgeInsets.only(right: 16),
-            child: SelectedHouseCard(
-              favoriteHouse: house,
+            child: HouseCard(
+              house: house,
               onRemove: onRefresh,
             ),
           );

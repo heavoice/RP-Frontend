@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/settings/constant.dart';
 import 'package:frontend/services/favorite_service.dart';
 import 'package:frontend/storage/token_storage.dart';
-import 'package:frontend/widgets/house_slider.dart';
+import 'package:frontend/widgets/selectedhouse_slider.dart';
 
 class ThirdWidget extends StatefulWidget {
   const ThirdWidget({super.key});
@@ -124,7 +124,7 @@ class _ThirdWidgetState extends State<ThirdWidget> {
                       }
 
                       /// SUCCESS
-                      return HouseSlider(
+                      return SelectedHouseSlider(
                         favorites: favorites,
                         onRefresh: loadFavorites,
                       );

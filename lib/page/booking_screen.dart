@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/settings/constant.dart';
-import 'package:frontend/widgets/home/first_widget.dart';
-import 'package:frontend/widgets/home/quicksearch_widget.dart';
-import 'package:frontend/widgets/home/third_widget.dart';
+import 'package:frontend/widgets/booking/bookinglist_widget.dart';
 import 'package:frontend/widgets/mobile_drawer.dart';
-import 'package:frontend/widgets/home/second_widget.dart';
+import 'package:frontend/widgets/booking/first_widget.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class BookingScreen extends StatefulWidget {
+  const BookingScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<BookingScreen> createState() => _BookingScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _BookingScreenState extends State<BookingScreen> {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
@@ -23,11 +21,7 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             FirstWidget(),
             SizedBox(height: 40),
-            SecondWidget(),
-            SizedBox(height: 40),
-            QuickSearchWidget(),
-            ThirdWidget(),
-            SizedBox(height: 100),
+            BookingListWidget(),
           ],
         ),
       ),

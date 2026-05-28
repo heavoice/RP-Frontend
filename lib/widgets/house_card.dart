@@ -2,20 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:frontend/services/favorite_service.dart';
 import 'package:frontend/settings/constant.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/providers/auth_provider.dart';
+import 'package:frontend/services/booking_service.dart';
 
-class HouseCard extends StatefulWidget {
+class HouseCard extends ConsumerStatefulWidget {
   final Map<String, dynamic> house;
+  final VoidCallback? onRemove;
 
   const HouseCard({
     super.key,
     required this.house,
+    this.onRemove,
   });
 
   @override
-  State<HouseCard> createState() => _HouseCardState();
+  ConsumerState<HouseCard> createState() => _HouseCardState();
 }
 
-class _HouseCardState extends State<HouseCard> {
+class _HouseCardState extends ConsumerState<HouseCard> {
   bool isHover = false;
   bool isFavorite = true;
 
@@ -185,6 +190,7 @@ class _HouseCardState extends State<HouseCard> {
                           Colors.black,
                         ),
                       ),
+
                       const SizedBox(height: 12),
 
                       /// PRICE
@@ -215,9 +221,11 @@ class _HouseCardState extends State<HouseCard> {
                           Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(LucideIcons.bedDouble,
-                                  size: 14,
-                                  color: AppColors.secondwidgetborder),
+                              const Icon(
+                                LucideIcons.bedDouble,
+                                size: 14,
+                                color: AppColors.secondwidgetborder,
+                              ),
                               const SizedBox(width: 4),
                               Text(
                                 '${house['bedrooms'] ?? 0}',
@@ -239,9 +247,11 @@ class _HouseCardState extends State<HouseCard> {
                           Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(LucideIcons.bath,
-                                  size: 14,
-                                  color: AppColors.secondwidgetborder),
+                              const Icon(
+                                LucideIcons.bath,
+                                size: 14,
+                                color: AppColors.secondwidgetborder,
+                              ),
                               const SizedBox(width: 4),
                               Text(
                                 '${house['bathrooms'] ?? 0}',
@@ -263,9 +273,11 @@ class _HouseCardState extends State<HouseCard> {
                           Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(LucideIcons.ruler,
-                                  size: 14,
-                                  color: AppColors.secondwidgetborder),
+                              const Icon(
+                                LucideIcons.ruler,
+                                size: 14,
+                                color: AppColors.secondwidgetborder,
+                              ),
                               const SizedBox(width: 4),
                               Text(
                                 '${house['landSize'] ?? '-'} m²',
@@ -282,7 +294,7 @@ class _HouseCardState extends State<HouseCard> {
 
                       const SizedBox(height: 12),
 
-                      /// BUTTONS
+                      /// BUTTON DETAIL
                       InkWell(
                         onTap: () {},
                         child: Container(
@@ -291,11 +303,184 @@ class _HouseCardState extends State<HouseCard> {
                             vertical: 10,
                           ),
                           decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(999),
-                              color: AppColors.primarycolor),
+                            borderRadius: BorderRadius.circular(999),
+                            color: AppColors.secondcolor,
+                          ),
                           child: const Center(
                             child: Text(
                               'Buka Selengkapnya',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontFamily: AppFonts.primary,
+                                fontSize: 12,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 4),
+
+                      /// BUTTON BOOKING
+                      InkWell(
+                        onTap: () async {
+                          String notes = "";
+
+                          final result = await showDialog<String>(
+                            context: context,
+                            builder: (context) {
+                              return StatefulBuilder(
+                                builder: (context, setModalState) {
+                                  return AlertDialog(
+                                    backgroundColor: AppColors.background,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(24),
+                                    ),
+                                    title: const Text(
+                                      'Tambah Catatan',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontFamily: AppFonts.primary,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    content: TextField(
+                                      cursorColor: AppColors.secondwidgetborder,
+                                      maxLines: 3,
+                                      onChanged: (value) {
+                                        notes = value;
+                                      },
+                                      decoration: InputDecoration(
+                                        hintText:
+                                            'Contoh: tolong proses cepat...',
+                                        hintStyle: const TextStyle(
+                                          fontFamily: AppFonts.primary,
+                                          fontSize: 12,
+                                          color: AppColors.secondwidgetborder,
+                                        ),
+                                        border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(16),
+                                        ),
+                                        focusedBorder: const OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: AppColors.secondwidgetborder,
+                                          ),
+                                        ),
+                                      ),
+                                      style: const TextStyle(
+                                        fontFamily: AppFonts.primary,
+                                        fontSize: 12,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        child: const Text(
+                                          'Batal',
+                                          style: TextStyle(
+                                            fontFamily: AppFonts.primary,
+                                            fontSize: 12,
+                                            color: AppColors.secondcolor,
+                                          ),
+                                        ),
+                                      ),
+                                      ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor:
+                                              AppColors.primarycolor,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(999),
+                                          ),
+                                        ),
+                                        onPressed: () {
+                                          Navigator.pop(
+                                            context,
+                                            notes,
+                                          );
+                                        },
+                                        child: const Text(
+                                          'Booking',
+                                          style: TextStyle(
+                                            fontFamily: AppFonts.primary,
+                                            fontSize: 12,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            },
+                          );
+
+                          /// USER CANCEL
+                          if (result == null) return;
+
+                          try {
+                            final auth = ref.read(authProvider);
+                            final token = auth.token ?? "";
+
+                            await BookingService.createBooking(
+                              token: token,
+                              houseId: widget.house['id'],
+                              notes: result,
+                            );
+
+                            if (!mounted) return;
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  "Booking berhasil dibuat",
+                                ),
+                              ),
+                            );
+                          } catch (e) {
+                            if (!mounted) return;
+
+                            final error = e.toString();
+
+                            if (error.contains("House already booked")) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    "Rumah sudah dibooking",
+                                  ),
+                                ),
+                              );
+
+                              return;
+                            }
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  "Gagal booking: $e",
+                                ),
+                              ),
+                            );
+                          }
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 10,
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(999),
+                            color: AppColors.primarycolor,
+                          ),
+                          child: const Center(
+                            child: Text(
+                              'Book Rumah Ini',
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
