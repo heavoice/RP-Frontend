@@ -40,7 +40,7 @@ class _FirstWidgetState extends State<FirstWidget> {
                       },
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: AppColors.background,
                           borderRadius: BorderRadius.circular(32),
                           border: Border.all(
                             color: Colors.black12,
@@ -82,7 +82,7 @@ class _FirstWidgetState extends State<FirstWidget> {
                   ),
                   child: const Icon(
                     LucideIcons.funnel,
-                    color: Colors.white,
+                    color: AppColors.background,
                     size: 20,
                   ),
                 )
@@ -92,7 +92,7 @@ class _FirstWidgetState extends State<FirstWidget> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: AppColors.background,
                 borderRadius: BorderRadius.circular(999),
                 border: Border.all(
                   color: Colors.black12,
@@ -166,7 +166,7 @@ class _FirstWidgetState extends State<FirstWidget> {
             vertical: 6,
           ),
           decoration: BoxDecoration(
-            color: isSelected ? AppColors.primarycolor : Colors.white,
+            color: isSelected ? AppColors.primarycolor : AppColors.background,
             borderRadius: BorderRadius.circular(999),
             border: Border.all(
               color: isSelected ? AppColors.primarycolor : Colors.black12,
@@ -180,7 +180,7 @@ class _FirstWidgetState extends State<FirstWidget> {
             style: textStyle(
               9,
               FontWeight.w500,
-              isSelected ? Colors.white : AppColors.secondwidgetborder,
+              isSelected ? AppColors.background : AppColors.secondwidgetborder,
             ),
           ),
         ),

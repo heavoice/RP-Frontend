@@ -73,7 +73,7 @@ class PriceSelector extends StatelessWidget {
           style: textStyle(
             9,
             FontWeight.w500,
-            isSelected ? Colors.white : AppColors.secondwidgetborder,
+            isSelected ? AppColors.background : AppColors.secondwidgetborder,
           ),
         ),
       ),

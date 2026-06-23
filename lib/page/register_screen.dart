@@ -484,7 +484,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   fontFamily: AppFonts.primary,
                                   fontSize: 16,
                                   fontWeight: FontWeight.w400,
-                                  color: Colors.white,
+                                  color: AppColors.background,
                                 ),
                               ),
                             ],

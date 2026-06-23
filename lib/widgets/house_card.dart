@@ -52,14 +52,14 @@ class _HouseCardState extends ConsumerState<HouseCard> {
         child: Container(
           alignment: Alignment.topCenter,
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppColors.background,
             borderRadius: BorderRadius.circular(32),
           ),
           child: Material(
             elevation: 8,
             borderRadius: BorderRadius.circular(32),
             clipBehavior: Clip.antiAlias,
-            color: Colors.white,
+            color: AppColors.background,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -99,7 +99,7 @@ class _HouseCardState extends ConsumerState<HouseCard> {
                                 const Icon(
                                   LucideIcons.mapPin,
                                   size: 12,
-                                  color: Colors.white,
+                                  color: AppColors.background,
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
@@ -107,7 +107,7 @@ class _HouseCardState extends ConsumerState<HouseCard> {
                                   style: textStyle(
                                     9,
                                     FontWeight.w400,
-                                    Colors.white,
+                                    AppColors.background,
                                   ),
                                 ),
                               ],
@@ -121,7 +121,7 @@ class _HouseCardState extends ConsumerState<HouseCard> {
                           right: 12,
                           child: Material(
                             elevation: 4,
-                            color: Colors.white,
+                            color: AppColors.background,
                             shape: const CircleBorder(),
                             child: InkWell(
                               borderRadius: BorderRadius.circular(999),
@@ -293,6 +293,27 @@ class _HouseCardState extends ConsumerState<HouseCard> {
                       ),
 
                       const SizedBox(height: 12),
+                      // BOOKED BY
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            LucideIcons.bookPlus,
+                            size: 14,
+                            color: AppColors.secondwidgetborder,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Telah dibooking oleh: ${house['user'] ?? 'Belum ada'}',
+                            style: textStyle(
+                              11,
+                              FontWeight.w400,
+                              AppColors.secondwidgetborder,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
 
                       /// BUTTON DETAIL
                       InkWell(
@@ -314,7 +335,7 @@ class _HouseCardState extends ConsumerState<HouseCard> {
                               style: TextStyle(
                                 fontFamily: AppFonts.primary,
                                 fontSize: 12,
-                                color: Colors.white,
+                                color: AppColors.background,
                               ),
                             ),
                           ),
@@ -410,7 +431,7 @@ class _HouseCardState extends ConsumerState<HouseCard> {
                                           style: TextStyle(
                                             fontFamily: AppFonts.primary,
                                             fontSize: 12,
-                                            color: Colors.white,
+                                            color: AppColors.background,
                                           ),
                                         ),
                                       ),
@@ -486,7 +507,7 @@ class _HouseCardState extends ConsumerState<HouseCard> {
                               style: TextStyle(
                                 fontFamily: AppFonts.primary,
                                 fontSize: 12,
-                                color: Colors.white,
+                                color: AppColors.background,
                               ),
                             ),
                           ),

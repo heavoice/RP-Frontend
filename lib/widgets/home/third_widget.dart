@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/settings/constant.dart';
 import 'package:frontend/services/favorite_service.dart';
 import 'package:frontend/storage/token_storage.dart';
-import 'package:frontend/widgets/selectedhouse_slider.dart';
+import 'package:frontend/widgets/selected_house_slider.dart';
 
 class ThirdWidget extends StatefulWidget {
   const ThirdWidget({super.key});

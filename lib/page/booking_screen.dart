@@ -22,6 +22,7 @@ class _BookingScreenState extends State<BookingScreen> {
             FirstWidget(),
             SizedBox(height: 40),
             BookingListWidget(),
+            SizedBox(height: 60),
           ],
         ),
       ),

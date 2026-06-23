@@ -53,4 +53,22 @@ class BookingService {
     /// backend error message
     throw Exception(data['error'] ?? 'Failed to create booking');
   }
+
+  static Future<List<dynamic>> getAllBookings(String token) async {
+    final uri = Uri.parse('${Env.gateway}/users/bookings');
+
+    final response = await http.get(
+      uri,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    }
+
+    throw Exception('Failed to load bookings');
+  }
 }

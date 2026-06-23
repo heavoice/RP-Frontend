@@ -1,21 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:frontend/env.dart';
 import 'package:frontend/page/booking_screen.dart';
-
 import 'package:frontend/page/home_screen.dart';
 import 'package:frontend/page/login_screen.dart';
 import 'package:frontend/page/register_screen.dart';
 import 'package:frontend/page/search_screen.dart';
 import 'package:frontend/page/splash_screen.dart';
-
 import 'package:frontend/providers/auth_provider.dart';
-
 import 'package:frontend/settings/protected_route.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await initializeDateFormatting('id_ID', null);
 
   /// LOAD ENV
   await Env.load();

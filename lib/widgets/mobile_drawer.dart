@@ -29,7 +29,7 @@ class MobileDrawer extends ConsumerWidget {
         child: Material(
           elevation: 12,
           borderRadius: BorderRadius.circular(999),
-          color: Colors.white,
+          color: AppColors.background,
           child: Container(
             constraints: BoxConstraints(
               maxWidth: screenWidth < 480 ? 300 : 400,
@@ -102,7 +102,9 @@ class MobileDrawer extends ConsumerWidget {
           children: [
             Icon(
               icon,
-              color: isActive ? Colors.white : AppColors.secondwidgetborder,
+              color: isActive
+                  ? AppColors.background
+                  : AppColors.secondwidgetborder,
             ),
             if (isActive)
               Padding(
@@ -113,7 +115,7 @@ class MobileDrawer extends ConsumerWidget {
                     fontFamily: AppFonts.primary,
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
-                    color: Colors.white,
+                    color: AppColors.background,
                   ),
                 ),
               ),

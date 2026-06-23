@@ -379,7 +379,7 @@ class _SecondWidgetState extends ConsumerState<SecondWidget> {
           children: [
             Icon(
               LucideIcons.search,
-              color: Colors.white,
+              color: AppColors.background,
               size: 16,
             ),
             SizedBox(width: 8),
@@ -388,7 +388,7 @@ class _SecondWidgetState extends ConsumerState<SecondWidget> {
               style: TextStyle(
                 fontFamily: AppFonts.primary,
                 fontSize: 16,
-                color: Colors.white,
+                color: AppColors.background,
               ),
             ),
           ],

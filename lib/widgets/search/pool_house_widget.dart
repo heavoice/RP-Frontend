@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/exceptions/unauthorized_exception.dart';
 import 'package:frontend/providers/auth_provider.dart';
+import 'package:frontend/services/booking_service.dart';
 import 'package:frontend/settings/constant.dart';
 import 'package:frontend/services/house_service.dart';
 import 'package:frontend/widgets/house_card.dart';
@@ -26,13 +27,31 @@ class _PoolHouseWidgetState extends ConsumerState<PoolHouseWidget> {
   /// LOAD HOUSES
   Future<List<dynamic>> loadHouses() async {
     try {
+      final token = ref.read(authProvider).token;
+
       final houses = await HouseService.getHouses();
+      final bookings = await BookingService.getAllBookings(token!);
 
-      return houses;
+      /// mapping booking per houseId
+      final Map<int, dynamic> bookingMap = {};
+
+      for (final b in bookings) {
+        bookingMap[b['houseId']] = b;
+      }
+
+      /// merge ke houses
+      final merged = houses.map((house) {
+        final h = Map<String, dynamic>.from(house);
+
+        return {
+          ...h,
+          "user": bookingMap[h['id']]?['user']?['name'],
+        };
+      }).toList();
+
+      return merged;
     } on UnauthorizedException {
-      /// AUTO LOGOUT REACTIVE
       await ref.read(authProvider.notifier).logout();
-
       rethrow;
     }
   }
@@ -178,7 +197,7 @@ class _PoolHouseWidgetState extends ConsumerState<PoolHouseWidget> {
               children: houses.map((house) {
                 return Padding(
                   padding: const EdgeInsets.only(
-                    bottom: 16,
+                    bottom: 24,
                   ),
                   child: HouseCard(
                     house: house,

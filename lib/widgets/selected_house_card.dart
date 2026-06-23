@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/providers/auth_provider.dart';
+import 'package:frontend/services/booking_service.dart';
 import 'package:frontend/services/favorite_service.dart';
 import 'package:frontend/settings/constant.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-class SelectedHouseCard extends StatefulWidget {
+class SelectedHouseCard extends ConsumerStatefulWidget {
   final Map<String, dynamic> favoriteHouse;
   final VoidCallback? onRemove;
 
@@ -14,10 +17,10 @@ class SelectedHouseCard extends StatefulWidget {
   });
 
   @override
-  State<SelectedHouseCard> createState() => _SelectedHouseCardState();
+  ConsumerState<SelectedHouseCard> createState() => _SelectedHouseCardState();
 }
 
-class _SelectedHouseCardState extends State<SelectedHouseCard> {
+class _SelectedHouseCardState extends ConsumerState<SelectedHouseCard> {
   bool isHover = false;
 
   TextStyle textStyle(double size, FontWeight weight, Color color) => TextStyle(
@@ -47,14 +50,14 @@ class _SelectedHouseCardState extends State<SelectedHouseCard> {
       child: Container(
         alignment: Alignment.topCenter,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.background,
           borderRadius: BorderRadius.circular(32),
         ),
         child: Material(
           elevation: 8,
           borderRadius: BorderRadius.circular(32),
           clipBehavior: Clip.antiAlias,
-          color: Colors.white,
+          color: AppColors.background,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -92,7 +95,7 @@ class _SelectedHouseCardState extends State<SelectedHouseCard> {
                               const Icon(
                                 LucideIcons.mapPin,
                                 size: 12,
-                                color: Colors.white,
+                                color: AppColors.background,
                               ),
                               const SizedBox(width: 4),
                               Text(
@@ -100,7 +103,7 @@ class _SelectedHouseCardState extends State<SelectedHouseCard> {
                                 style: textStyle(
                                   9,
                                   FontWeight.w400,
-                                  Colors.white,
+                                  AppColors.background,
                                 ),
                               ),
                             ],
@@ -114,7 +117,7 @@ class _SelectedHouseCardState extends State<SelectedHouseCard> {
                         right: 12,
                         child: Material(
                           elevation: 4,
-                          color: Colors.white,
+                          color: AppColors.background,
                           shape: const CircleBorder(),
                           child: InkWell(
                             borderRadius: BorderRadius.circular(999),
@@ -289,12 +292,182 @@ class _SelectedHouseCardState extends State<SelectedHouseCard> {
                             style: TextStyle(
                               fontFamily: AppFonts.primary,
                               fontSize: 12,
-                              color: Colors.white,
+                              color: AppColors.background,
                             ),
                           ),
                         ),
                       ),
                     ),
+                    const SizedBox(height: 4),
+                    // BOOKING BUTTON
+                    InkWell(
+                      onTap: () async {
+                        String notes = "";
+
+                        final result = await showDialog<String>(
+                          context: context,
+                          builder: (context) {
+                            return StatefulBuilder(
+                              builder: (context, setModalState) {
+                                return AlertDialog(
+                                  backgroundColor: AppColors.background,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(24),
+                                  ),
+                                  title: const Text(
+                                    'Tambah Catatan',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontFamily: AppFonts.primary,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  content: TextField(
+                                    cursorColor: AppColors.secondwidgetborder,
+                                    maxLines: 3,
+                                    onChanged: (value) {
+                                      notes = value;
+                                    },
+                                    decoration: InputDecoration(
+                                      hintText:
+                                          'Contoh: tolong proses cepat...',
+                                      hintStyle: const TextStyle(
+                                        fontFamily: AppFonts.primary,
+                                        fontSize: 12,
+                                        color: AppColors.secondwidgetborder,
+                                      ),
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                      focusedBorder: const OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                          color: AppColors.secondwidgetborder,
+                                        ),
+                                      ),
+                                    ),
+                                    style: const TextStyle(
+                                      fontFamily: AppFonts.primary,
+                                      fontSize: 12,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      child: const Text(
+                                        'Batal',
+                                        style: TextStyle(
+                                          fontFamily: AppFonts.primary,
+                                          fontSize: 12,
+                                          color: AppColors.secondcolor,
+                                        ),
+                                      ),
+                                    ),
+                                    ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: AppColors.primarycolor,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(999),
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        Navigator.pop(
+                                          context,
+                                          notes,
+                                        );
+                                      },
+                                      child: const Text(
+                                        'Booking',
+                                        style: TextStyle(
+                                          fontFamily: AppFonts.primary,
+                                          fontSize: 12,
+                                          color: AppColors.background,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                        );
+
+                        /// USER CANCEL
+                        if (result == null) return;
+
+                        try {
+                          final auth = ref.read(authProvider);
+                          final token = auth.token ?? "";
+
+                          await BookingService.createBooking(
+                            token: token,
+                            houseId: widget.favoriteHouse['houseId'],
+                            notes: result,
+                          );
+
+                          if (!mounted) return;
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                "Booking berhasil dibuat",
+                              ),
+                            ),
+                          );
+                        } catch (e) {
+                          if (!mounted) return;
+
+                          final error = e.toString();
+
+                          if (error.contains("House already booked")) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  "Rumah sudah dibooking",
+                                ),
+                              ),
+                            );
+
+                            return;
+                          }
+
+                          debugPrint("Booking Error: $e");
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                "Gagal booking: $e",
+                              ),
+                            ),
+                          );
+                        }
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 10,
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(999),
+                          color: AppColors.primarycolor,
+                        ),
+                        child: const Center(
+                          child: Text(
+                            'Book Rumah Ini',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontFamily: AppFonts.primary,
+                              fontSize: 12,
+                              color: AppColors.background,
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
                   ],
                 ),
               ),

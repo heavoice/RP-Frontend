@@ -98,6 +98,9 @@ class _BookingListWidgetState extends ConsumerState<BookingListWidget> {
             screenWidth: screenWidth,
             child: const Center(
               child: CircularProgressIndicator(
+                padding: EdgeInsets.symmetric(
+                  vertical: 80,
+                ),
                 color: AppColors.secondcolor,
               ),
             ),
@@ -133,6 +136,7 @@ class _BookingListWidgetState extends ConsumerState<BookingListWidget> {
                   padding: const EdgeInsets.only(bottom: 24),
                   child: BookingListCard(
                     house: booking['house'],
+                    booking: booking,
                     status: booking['status'],
                   ),
                 );

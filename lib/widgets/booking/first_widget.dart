@@ -41,7 +41,7 @@ class _FirstWidgetState extends State<FirstWidget> {
                         },
                         child: Container(
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: AppColors.background,
                             borderRadius: BorderRadius.circular(32),
                             border: Border.all(
                               color: Colors.black12,

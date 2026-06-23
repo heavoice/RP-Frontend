@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/providers/search_provider.dart';
 import 'package:frontend/settings/constant.dart';
-import 'package:frontend/widgets/qsearchhouse_slider.dart';
+import 'package:frontend/widgets/quicksearch_house_slider.dart';
 
 class QuickSearchWidget extends ConsumerWidget {
   const QuickSearchWidget({super.key});
