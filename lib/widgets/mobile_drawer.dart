@@ -57,7 +57,7 @@ class MobileDrawer extends ConsumerWidget {
                     route: '/booking'),
                 const SizedBox(width: 16),
                 _navItem(context, ref,
-                    title: 'User',
+                    title: 'Profile',
                     activeMenu: activeMenu,
                     icon: LucideIcons.user,
                     route: '/profile'),

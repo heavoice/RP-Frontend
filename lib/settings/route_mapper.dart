@@ -7,7 +7,7 @@ String routeToMenu(String route) {
     case '/booking':
       return 'Booking';
     case '/profile':
-      return 'User';
+      return 'Profile';
     default:
       return 'Home';
   }

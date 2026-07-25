@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/exceptions/unauthorized_exception.dart';
 import 'package:frontend/providers/auth_provider.dart';
 import 'package:frontend/providers/search_provider.dart';
+import 'package:frontend/services/booking_service.dart';
 import 'package:frontend/services/house_service.dart';
 import 'package:frontend/settings/constant.dart';
 import 'package:frontend/settings/first_capitalize.dart';
@@ -54,21 +55,40 @@ class _SecondWidgetState extends ConsumerState<SecondWidget> {
     }
   }
 
-  /// LOAD HOUSES
   Future<void> loadHouses() async {
     try {
+      final token = ref.read(authProvider).token;
+
       final data = await HouseService.getHouses();
+      final bookings = await BookingService.getAllBookings(token!);
+
+      /// mapping booking berdasarkan houseId
+      final Map<int, dynamic> bookingMap = {};
+
+      for (final booking in bookings) {
+        bookingMap[booking['houseId']] = booking;
+      }
+
+      /// gabungkan house dengan booking
+      final mergedHouses = data.map((house) {
+        return {
+          ...house,
+          'booking': bookingMap[house['id']],
+        };
+      }).toList();
 
       if (!mounted) return;
 
       setState(() {
-        houses = data;
-        filteredHouses = data;
+        this.houses = mergedHouses;
+        filteredHouses = mergedHouses;
 
-        locations =
-            data.map<String>((e) => e['location'].toString()).toSet().toList();
+        locations = mergedHouses
+            .map<String>((e) => e['location'].toString())
+            .toSet()
+            .toList();
 
-        types = data
+        types = mergedHouses
             .map<String>((e) => e['propertyType'].toString())
             .toSet()
             .toList();

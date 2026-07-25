@@ -1,11 +1,7 @@
 import 'dart:convert';
-
-import 'package:flutter/foundation.dart';
-
 import 'package:frontend/env.dart';
 import 'package:frontend/services/token_helper.dart';
 import 'package:frontend/storage/token_storage.dart';
-
 import 'package:http/http.dart' as http;
 
 class FavoriteService {
@@ -17,18 +13,6 @@ class FavoriteService {
       final token = await TokenStorage.get();
 
       final userId = await TokenStorage.getUserId();
-
-      debugPrint(
-        'TOKEN: $token',
-      );
-
-      debugPrint(
-        'USERID: $userId',
-      );
-
-      debugPrint(
-        'HOUSEID: $houseId',
-      );
 
       if (token == null) {
         throw Exception(
@@ -56,14 +40,6 @@ class FavoriteService {
         }),
       );
 
-      debugPrint(
-        'ADD FAVORITE STATUS: ${response.statusCode}',
-      );
-
-      debugPrint(
-        'ADD FAVORITE BODY: ${response.body}',
-      );
-
       /// HANDLE 401
       TokenHelper.handleUnauthorized(
         response.statusCode,
@@ -83,10 +59,6 @@ class FavoriteService {
         body?['error'] ?? 'Failed to add favorite',
       );
     } catch (e) {
-      debugPrint(
-        'ADD FAVORITE ERROR: $e',
-      );
-
       rethrow;
     }
   }
@@ -108,14 +80,6 @@ class FavoriteService {
         },
       );
 
-      debugPrint(
-        'GET FAVORITES STATUS: ${response.statusCode}',
-      );
-
-      debugPrint(
-        'GET FAVORITES BODY: ${response.body}',
-      );
-
       /// HANDLE 401
       TokenHelper.handleUnauthorized(
         response.statusCode,
@@ -131,10 +95,6 @@ class FavoriteService {
         'Failed to get favorites',
       );
     } catch (e) {
-      debugPrint(
-        'GET FAVORITES ERROR: $e',
-      );
-
       rethrow;
     }
   }
@@ -170,14 +130,6 @@ class FavoriteService {
         },
       );
 
-      debugPrint(
-        'REMOVE FAVORITE STATUS: ${response.statusCode}',
-      );
-
-      debugPrint(
-        'REMOVE FAVORITE BODY: ${response.body}',
-      );
-
       /// HANDLE 401
       TokenHelper.handleUnauthorized(
         response.statusCode,
@@ -197,10 +149,6 @@ class FavoriteService {
         body?['error'] ?? 'Failed to remove favorite',
       );
     } catch (e) {
-      debugPrint(
-        'REMOVE FAVORITE ERROR: $e',
-      );
-
       rethrow;
     }
   }

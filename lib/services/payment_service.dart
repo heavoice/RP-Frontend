@@ -3,7 +3,7 @@ import 'package:frontend/env.dart';
 import 'package:http/http.dart' as http;
 
 class PaymentService {
-  static Future<Map<String, dynamic>?> createPayment({
+  static Future<Map<String, dynamic>> createPayment({
     required String token,
     required int bookingId,
     String? method,
@@ -24,15 +24,8 @@ class PaymentService {
 
     final data = jsonDecode(response.body);
 
-    /// SUCCESS
     if (response.statusCode == 200 || response.statusCode == 201) {
       return data;
-    }
-
-    /// PAYMENT EXISTS → arahkan ke fetch existing
-    if (response.statusCode == 400 &&
-        data['error'] == "Payment already exists for this booking") {
-      return null; // 👈 penting
     }
 
     throw Exception(data['error'] ?? 'Failed to create payment');

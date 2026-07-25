@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/widgets/house_card.dart';
+import 'package:frontend/widgets/home/quicksearch_house_card.dart';
 
 class QuickSearchHouseSlider extends StatelessWidget {
   final List<dynamic> houses;
@@ -14,7 +14,7 @@ class QuickSearchHouseSlider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 360,
+      height: 380,
       child: PageView.builder(
         controller: PageController(viewportFraction: 0.9),
         clipBehavior: Clip.none,
@@ -26,7 +26,7 @@ class QuickSearchHouseSlider extends StatelessWidget {
 
           return Padding(
             padding: const EdgeInsets.only(right: 16),
-            child: HouseCard(
+            child: QuickSearchHouseCard(
               house: house,
               onRemove: onRefresh,
             ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/page/profile_screen.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:frontend/env.dart';
 import 'package:frontend/page/booking_screen.dart';
@@ -75,6 +76,9 @@ class RumahPrediksi extends ConsumerWidget {
             ),
         '/booking': (_) => const ProtectedRoute(
               child: BookingScreen(),
+            ),
+        '/profile': (_) => const ProtectedRoute(
+              child: ProfileScreen(),
             )
       },
     );

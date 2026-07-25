@@ -71,4 +71,27 @@ class BookingService {
 
     throw Exception('Failed to load bookings');
   }
+
+  static Future<Map<String, dynamic>> cancelBooking({
+    required String token,
+    required int bookingId,
+  }) async {
+    final uri = Uri.parse('${Env.gateway}/users/bookings/$bookingId/cancel');
+
+    final response = await http.patch(
+      uri,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    final data = jsonDecode(response.body);
+
+    if (response.statusCode == 200) {
+      return data;
+    }
+
+    throw Exception(data['error'] ?? 'Failed to cancel booking');
+  }
 }

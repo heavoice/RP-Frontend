@@ -14,7 +14,7 @@ class SelectedHouseSlider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 360,
+      height: 400,
       child: PageView.builder(
         controller: PageController(viewportFraction: 0.9),
         clipBehavior: Clip.none,

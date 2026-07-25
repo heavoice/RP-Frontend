@@ -1,9 +1,7 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:frontend/exceptions/unauthorized_exception.dart';
 import 'package:frontend/providers/auth_provider.dart';
-import 'package:frontend/services/login_service.dart';
+import 'package:frontend/providers/user_provider.dart';
 import 'package:frontend/settings/constant.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
@@ -15,9 +13,6 @@ class FirstWidget extends ConsumerStatefulWidget {
 }
 
 class _FirstWidgetState extends ConsumerState<FirstWidget> {
-  String userName = '';
-  bool isLoading = true;
-
   TextStyle textStyle(
     double size,
     FontWeight weight,
@@ -31,57 +26,10 @@ class _FirstWidgetState extends ConsumerState<FirstWidget> {
     );
   }
 
-  Future<void> fetchUser() async {
-    try {
-      /// AMBIL DARI PROVIDER
-      final auth = ref.read(authProvider);
-
-      final userId = auth.userId;
-
-      debugPrint('USER ID: $userId');
-
-      if (userId == null || userId == 0) {
-        throw Exception('User ID tidak valid');
-      }
-
-      final user = await LoginService.getUser(userId);
-
-      debugPrint('USER DATA: $user');
-
-      if (!mounted) return;
-
-      setState(() {
-        userName = user?['name'] ?? 'User';
-
-        isLoading = false;
-      });
-    } on UnauthorizedException {
-      /// AUTO LOGOUT REACTIVE
-      await ref.read(authProvider.notifier).logout();
-    } catch (e) {
-      debugPrint('GET USER ERROR: $e');
-
-      if (!mounted) return;
-
-      setState(() {
-        userName = 'User';
-
-        isLoading = false;
-      });
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    fetchUser();
-  }
-
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-
+    final userAsync = ref.watch(userProvider);
     return Padding(
       padding: const EdgeInsets.only(top: 42),
       child: Center(
@@ -94,39 +42,114 @@ class _FirstWidgetState extends ConsumerState<FirstWidget> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               /// USER INFO
-              Row(
-                children: [
-                  ClipOval(
-                    child: Container(
-                      color: AppColors.secondwidgetborder,
-                      width: 45,
-                      height: 45,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        isLoading ? "Loading..." : "Selamat Datang,",
-                        style: textStyle(
-                          12,
-                          FontWeight.w300,
-                          AppColors.secondwidgetborder,
-                        ),
-                      ),
-                      if (!isLoading)
-                        Text(
-                          userName,
-                          style: textStyle(
-                            18,
-                            FontWeight.w600,
-                            Colors.black,
+              userAsync.when(
+                loading: () => Row(
+                  children: [
+                    ClipOval(
+                      child: Container(
+                        width: 45,
+                        height: 45,
+                        color: AppColors.secondwidgetborder,
+                        alignment: Alignment.center,
+                        child: const Text(
+                          "?",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontFamily: AppFonts.primary,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Text(
+                      "Loading...",
+                      style: textStyle(
+                        12,
+                        FontWeight.w300,
+                        AppColors.secondwidgetborder,
+                      ),
+                    ),
+                  ],
+                ),
+                error: (_, __) => Row(
+                  children: [
+                    ClipOval(
+                      child: Container(
+                        width: 45,
+                        height: 45,
+                        color: AppColors.secondwidgetborder,
+                        alignment: Alignment.center,
+                        child: const Text(
+                          "?",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontFamily: AppFonts.primary,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Text(
+                      "User",
+                      style: textStyle(
+                        18,
+                        FontWeight.w600,
+                        Colors.black,
+                      ),
+                    ),
+                  ],
+                ),
+                data: (user) {
+                  final userName = user?['name'] ?? "User";
+
+                  return Row(
+                    children: [
+                      ClipOval(
+                        child: Container(
+                          width: 45,
+                          height: 45,
+                          color: AppColors.secondwidgetborder,
+                          alignment: Alignment.center,
+                          child: Text(
+                            userName[0].toUpperCase(),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontFamily: AppFonts.primary,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Selamat Datang,",
+                            style: textStyle(
+                              12,
+                              FontWeight.w300,
+                              AppColors.secondwidgetborder,
+                            ),
+                          ),
+                          Text(
+                            userName,
+                            style: textStyle(
+                              18,
+                              FontWeight.w600,
+                              Colors.black,
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
-                  ),
-                ],
+                  );
+                },
               ),
 
               /// LOGOUT

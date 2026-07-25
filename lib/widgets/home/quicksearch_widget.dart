@@ -42,7 +42,7 @@ class QuickSearchWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final houses = ref.watch(searchProvider);
-
+    debugPrint("SEARCH RESULT = $houses");
     final screenWidth = MediaQuery.of(context).size.width;
 
     /// BELUM SEARCH
@@ -80,6 +80,8 @@ class QuickSearchWidget extends ConsumerWidget {
     houses.sort(
       (a, b) => (a['id'] ?? 0).compareTo(b['id'] ?? 0),
     );
+
+    debugPrint("BUILD SLIDER ${houses.length}");
 
     /// SUCCESS
     return SingleChildScrollView(

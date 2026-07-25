@@ -43,6 +43,7 @@ class _SelectedHouseCardState extends ConsumerState<SelectedHouseCard> {
   @override
   Widget build(BuildContext context) {
     final house = widget.favoriteHouse['house'] ?? {};
+    final String bookedBy = widget.favoriteHouse['name'] ?? 'Belum ada';
 
     return MouseRegion(
       onEnter: (_) => setState(() => isHover = true),
@@ -270,7 +271,27 @@ class _SelectedHouseCardState extends ConsumerState<SelectedHouseCard> {
                         ),
                       ],
                     ),
-
+                    const SizedBox(height: 12),
+                    // BOOKED BY
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          LucideIcons.bookPlus,
+                          size: 14,
+                          color: AppColors.secondwidgetborder,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          'Telah dibooking oleh: $bookedBy',
+                          style: textStyle(
+                            11,
+                            FontWeight.w400,
+                            AppColors.secondwidgetborder,
+                          ),
+                        ),
+                      ],
+                    ),
                     const SizedBox(height: 12),
 
                     /// BUTTONS

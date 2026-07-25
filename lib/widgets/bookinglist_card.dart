@@ -1,11 +1,12 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:frontend/models/payment_method_item.dart';
 import 'package:frontend/providers/auth_provider.dart';
-import 'package:frontend/services/payment_service.dart';
+import 'package:frontend/services/booking_service.dart';
 import 'package:frontend/settings/booking_card_helper.dart';
+import 'package:frontend/settings/booking_status_helper.dart';
 import 'package:frontend/settings/constant.dart';
-import 'package:frontend/widgets/payment_dialog.dart';
+import 'package:frontend/widgets/booking_payment_handler.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class BookingListCard extends ConsumerStatefulWidget {
@@ -30,10 +31,49 @@ class _BookingListCardState extends ConsumerState<BookingListCard> {
   bool isHover = false;
   bool isFavorite = true;
   String? selectedMethod;
+  Timer? _timer;
+
+  String getCountdown(String? expiresAt) {
+    if (expiresAt == null) return "-";
+
+    final expireTime = DateTime.parse(expiresAt).toLocal();
+    final remaining = expireTime.difference(DateTime.now());
+
+    if (remaining.isNegative) {
+      return "Expired";
+    }
+
+    final minutes = remaining.inMinutes;
+    final seconds = remaining.inSeconds % 60;
+
+    return "${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}";
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted) {
+        setState(() {});
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final house = widget.house;
+    final booking = widget.booking;
+    final status = BookingStatusHelper.getEffectiveStatus(
+      booking?['status'],
+      booking?['expiresAt'],
+    );
 
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
@@ -111,14 +151,17 @@ class _BookingListCardState extends ConsumerState<BookingListCard> {
                               vertical: 4,
                             ),
                             decoration: BoxDecoration(
-                              color: (widget.status ?? "").toUpperCase() ==
-                                      "CONFIRMED"
+                              color: status == "CONFIRMED"
                                   ? Colors.green
-                                  : Colors.orange,
+                                  : status == "CANCELLED"
+                                      ? Colors.red
+                                      : status == "EXPIRED"
+                                          ? AppColors.secondwidgetborder
+                                          : Colors.orange,
                               borderRadius: BorderRadius.circular(999),
                             ),
                             child: Text(
-                              (widget.status ?? "").toUpperCase(),
+                              status,
                               style: const TextStyle(
                                 fontSize: 10,
                                 fontWeight: FontWeight.w600,
@@ -146,6 +189,38 @@ class _BookingListCardState extends ConsumerState<BookingListCard> {
                           FontWeight.w600,
                           Colors.black,
                         ),
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Icon(
+                            BookingStatusHelper.getIcon(
+                              booking?['status'],
+                              booking?['expiresAt'],
+                            ),
+                            size: 14,
+                            color: BookingStatusHelper.getColor(
+                              booking?['status'],
+                              booking?['expiresAt'],
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            BookingStatusHelper.getText(
+                              booking?['status'],
+                              getCountdown,
+                              booking?['expiresAt'],
+                            ),
+                            style: textStyle(
+                              11,
+                              FontWeight.w400,
+                              BookingStatusHelper.getColor(
+                                booking?['status'],
+                                booking?['expiresAt'],
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 12),
                       Row(
@@ -198,33 +273,94 @@ class _BookingListCardState extends ConsumerState<BookingListCard> {
                         ],
                       ),
                       const SizedBox(height: 12),
-                      InkWell(
-                        onTap: () {},
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 10,
-                          ),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(999),
-                            color: AppColors.secondcolor,
-                          ),
-                          child: const Center(
-                            child: Text(
-                              'Lihat Transaksi',
-                              style: TextStyle(
-                                fontFamily: AppFonts.primary,
-                                fontSize: 12,
-                                color: AppColors.background,
+                      if (status == "CONFIRMED") ...[
+                        InkWell(
+                          onTap: () {
+                            // TODO: Lihat transaksi
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 10,
+                            ),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(999),
+                              color: AppColors.secondcolor,
+                            ),
+                            child: const Center(
+                              child: Text(
+                                'Lihat Transaksi',
+                                style: TextStyle(
+                                  fontFamily: AppFonts.primary,
+                                  fontSize: 12,
+                                  color: AppColors.background,
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 4),
-                      if (widget.status != "CONFIRMED")
+                      ] else if (status != "CANCELLED" &&
+                          status != "EXPIRED") ...[
                         InkWell(
-                          onTap: _handlePayment,
+                          onTap: () async {
+                            final auth = ref.read(authProvider);
+                            final token = auth.token;
+
+                            if (token == null) throw Exception("No token");
+
+                            try {
+                              await BookingService.cancelBooking(
+                                token: token,
+                                bookingId: booking!['id'],
+                              );
+
+                              if (!mounted) return;
+
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text("Booking berhasil dibatalkan"),
+                                ),
+                              );
+
+                              setState(() {
+                                booking['status'] = "CANCELLED";
+                              });
+                            } catch (e) {
+                              if (!mounted) return;
+
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(e.toString())),
+                              );
+                            }
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 10,
+                            ),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(999),
+                              color: AppColors.secondcolor,
+                            ),
+                            child: const Center(
+                              child: Text(
+                                'Batalkan',
+                                style: TextStyle(
+                                  fontFamily: AppFonts.primary,
+                                  fontSize: 12,
+                                  color: AppColors.background,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        InkWell(
+                          onTap: () => BookingPaymentHandler.handlePayment(
+                            context: context,
+                            ref: ref,
+                            booking: booking!,
+                          ),
                           child: Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 12,
@@ -246,6 +382,7 @@ class _BookingListCardState extends ConsumerState<BookingListCard> {
                             ),
                           ),
                         ),
+                      ],
                     ],
                   ),
                 ),
@@ -277,195 +414,5 @@ class _BookingListCardState extends ConsumerState<BookingListCard> {
         ),
       ],
     );
-  }
-
-  Future<void> _handlePayment() async {
-    final auth = ref.read(authProvider);
-    final token = auth.token;
-
-    if (token == null) throw Exception("No token");
-
-    final bookingId = widget.booking?['id'];
-
-    if (bookingId == null) {
-      throw Exception("Booking ID not found");
-    }
-
-    try {
-      final existingPayment = await PaymentService.getPaymentByBooking(
-        token: token,
-        bookingId: bookingId,
-      );
-
-      if (existingPayment != null) {
-        // ignore: use_build_context_synchronously
-        showPaymentDialog(context, existingPayment, token);
-        return;
-      }
-
-      String? tempSelectedMethod = selectedMethod;
-
-      final method = await showDialog<String>(
-        context: context,
-        builder: (context) {
-          return StatefulBuilder(
-            builder: (context, setDialogState) {
-              return AlertDialog(
-                backgroundColor: AppColors.background,
-                title: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: AppColors.primarycolor,
-                        borderRadius: BorderRadius.circular(999),
-                      ),
-                      child: const Icon(
-                        LucideIcons.shieldCheck,
-                        size: 24,
-                        color: AppColors.background,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    const Expanded(
-                      child: Text(
-                        "Pilih Metode Pembayaran",
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        softWrap: false,
-                        style: TextStyle(
-                          fontFamily: AppFonts.primary,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    PaymentMethodItem(
-                      title: "Bank Transfer",
-                      description: "BSI · BRI · BCA",
-                      value: "BANK_TRANSFER",
-                      icon: LucideIcons.landmark,
-                      selectedValue: tempSelectedMethod,
-                      onSelected: (value) {
-                        setDialogState(() {
-                          tempSelectedMethod = value;
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 12),
-                    PaymentMethodItem(
-                      title: "E-Wallet",
-                      description: "DANA · OVO · GoPay",
-                      value: "E_WALLET",
-                      icon: LucideIcons.smartphone,
-                      selectedValue: tempSelectedMethod,
-                      onSelected: (value) {
-                        setDialogState(() {
-                          tempSelectedMethod = value;
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 12),
-                    PaymentMethodItem(
-                      title: "Credit Card",
-                      description: "Visa · MasterCard",
-                      value: "CREDIT_CARD",
-                      icon: LucideIcons.creditCard,
-                      selectedValue: tempSelectedMethod,
-                      onSelected: (value) {
-                        setDialogState(() {
-                          tempSelectedMethod = value;
-                        });
-                      },
-                    ),
-                  ],
-                ),
-                actions: [
-                  Column(
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(999),
-                          color: AppColors.primarycolor,
-                        ),
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.pop(
-                              context,
-                              tempSelectedMethod,
-                            );
-                          },
-                          child: const Text("Pilih",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  fontFamily: AppFonts.primary,
-                                  color: AppColors.background,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 12)),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(999),
-                          color: AppColors.secondcolor,
-                        ),
-                        child: InkWell(
-                          onTap: () => Navigator.pop(context),
-                          child: const Text("Batal",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  fontFamily: AppFonts.primary,
-                                  color: AppColors.background,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 12)),
-                        ),
-                      )
-                    ],
-                  ),
-                ],
-              );
-            },
-          );
-        },
-      );
-
-      if (method == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Pilih metode pembayaran terlebih dahulu"),
-          ),
-        );
-        return;
-      }
-
-      final payment = await PaymentService.createPayment(
-        token: token,
-        bookingId: bookingId,
-        method: method,
-      );
-
-      if (!mounted) return;
-
-      showPaymentDialog(context, payment!, token);
-    } catch (e) {
-      debugPrint("PAYMENT ERROR: $e");
-
-      if (!mounted) return;
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Gagal payment: $e")),
-      );
-    }
   }
 }
