@@ -1,7 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
-
 import 'package:frontend/env.dart';
 import 'package:frontend/services/token_helper.dart';
 import 'package:frontend/storage/token_storage.dart';

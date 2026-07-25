@@ -80,7 +80,7 @@ class _SecondWidgetState extends ConsumerState<SecondWidget> {
       if (!mounted) return;
 
       setState(() {
-        this.houses = mergedHouses;
+        houses = mergedHouses;
         filteredHouses = mergedHouses;
 
         locations = mergedHouses
