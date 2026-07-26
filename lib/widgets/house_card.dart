@@ -74,10 +74,56 @@ class _HouseCardState extends ConsumerState<HouseCard> {
                     aspectRatio: 16 / 9,
                     child: Stack(
                       children: [
-                        Image.asset(
-                          'assets/img/first_section.jpg',
-                          width: double.infinity,
-                          fit: BoxFit.cover,
+                        ClipRRect(
+                          borderRadius: const BorderRadius.vertical(
+                            top: Radius.circular(16),
+                          ),
+                          child: Builder(
+                            builder: (_) {
+                              final photos = house['photos'] as List?;
+
+                              if (photos != null && photos.isNotEmpty) {
+                                final imageUrl = photos.first['url'];
+
+                                return Image.network(
+                                  imageUrl,
+                                  width: double.infinity,
+                                  height: 180,
+                                  fit: BoxFit.cover,
+                                  loadingBuilder: (
+                                    context,
+                                    child,
+                                    loadingProgress,
+                                  ) {
+                                    if (loadingProgress == null) return child;
+
+                                    return const SizedBox(
+                                      width: double.infinity,
+                                      height: 180,
+                                      child: Center(
+                                        child: CircularProgressIndicator(),
+                                      ),
+                                    );
+                                  },
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Image.asset(
+                                      'assets/img/first_section.jpg',
+                                      width: double.infinity,
+                                      height: 180,
+                                      fit: BoxFit.cover,
+                                    );
+                                  },
+                                );
+                              }
+
+                              return Image.asset(
+                                'assets/img/first_section.jpg',
+                                width: double.infinity,
+                                height: 180,
+                                fit: BoxFit.cover,
+                              );
+                            },
+                          ),
                         ),
 
                         /// LOCATION TAG
